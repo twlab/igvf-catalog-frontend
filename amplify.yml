@@ -1,0 +1,19 @@
+version: 1
+frontend:
+    phases:
+        preBuild:
+            commands:
+                - yarn run ci
+        build:
+            commands:
+                - env | grep -e DB_URL -e DB_NAME -e DB_USERNAME -e DB_PASSWORD >> .env.production
+                - env | grep -e NEXT_PUBLIC_ >> .env.production
+                - yarn run build
+    artifacts:
+        baseDirectory: .next
+        files:
+            - "**/*"
+    cache:
+        paths:
+            - node_modules/**/*
+            - .next/cache/**/*
