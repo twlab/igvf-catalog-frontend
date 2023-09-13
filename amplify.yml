@@ -6,8 +6,10 @@ frontend:
                 - yarn run ci
         build:
             commands:
-                - env | grep -e DB_URL -e DB_NAME -e DB_USERNAME -e DB_PASSWORD >> .env.production
-                - env | grep -e NEXT_PUBLIC_ >> .env.production
+                - echo "DB_URL=$DB_URL" >> .env.local
+                - echo "DB_USERNAME=$DB_USERNAME" >> .env.local
+                - echo "DB_PASSWORD=$DB_PASSWORD" >> .env.local
+                - echo "DB_NAME=$DB_NAME" >> .env.local
                 - yarn run build
     artifacts:
         baseDirectory: .next
