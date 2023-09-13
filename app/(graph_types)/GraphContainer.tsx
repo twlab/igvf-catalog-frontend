@@ -236,6 +236,20 @@ export default function GraphContainer({
 
   const handleCloseType = () => setOpenType(null);
 
+  const [
+    geneStrokeWidth,
+    proteinStrokeWidth,
+    transcriptStrokeWidth,
+    drugStrokeWidth,
+    studyStrokeWidth,
+  ] = calculateStrokeWidths([
+    genes.length,
+    proteins.length,
+    transcripts.length,
+    drugs.length,
+    studies.length,
+  ]);
+
   if (openType) {
     return (
       <div className="p-6">
@@ -332,31 +346,31 @@ export default function GraphContainer({
                   targetId: 'geneContainer',
                   targetAnchor: 'left',
                   sourceAnchor: 'right',
-                  style: { strokeColor: 'black' }
+                  style: { strokeColor: 'black', strokeWidth: geneStrokeWidth }
                 },
                 {
                   targetId: 'proteinContainer',
                   targetAnchor: 'left',
                   sourceAnchor: 'right',
-                  style: { strokeColor: 'black' }
+                  style: { strokeColor: 'black', strokeWidth: proteinStrokeWidth }
                 },
                 {
                   targetId: 'transcriptContainer',
                   targetAnchor: 'left',
                   sourceAnchor: 'right',
-                  style: { strokeColor: 'black' }
+                  style: { strokeColor: 'black', strokeWidth: transcriptStrokeWidth }
                 },
                 {
                   targetId: 'drugContainer',
                   targetAnchor: 'left',
                   sourceAnchor: 'right',
-                  style: { strokeColor: 'black' }
+                  style: { strokeColor: 'black', strokeWidth: drugStrokeWidth }
                 },
                 {
                   targetId: 'studyContainer',
                   targetAnchor: 'left',
                   sourceAnchor: 'right',
-                  style: { strokeColor: 'red' }
+                  style: { strokeColor: 'red', strokeWidth: studyStrokeWidth }
                 },
               ]}
             >
@@ -486,4 +500,24 @@ function BackButton({
       </svg>
     </div>
   );
+}
+
+function calculateStrokeWidths(lengths: number[]): number[] {
+  const min = 1;
+  const max = 4;
+
+  const mid = (min + max) / 2;
+  const delta = (max - min) / 2;
+
+  const minLen = Math.min(...lengths);
+  const maxLen = Math.max(...lengths);
+
+  const diff = maxLen - minLen;
+
+  if (diff === 0) return lengths.map(() => mid);
+
+  return lengths.map((len) => {
+    const ratio = (len - minLen) / diff;
+    return min + ratio * delta;
+  });
 }
