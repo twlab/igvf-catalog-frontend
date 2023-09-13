@@ -7,7 +7,6 @@ frontend:
         build:
             commands:
                 - env | grep -e DB_URL -e DB_NAME -e DB_USERNAME -e DB_PASSWORD >> .env.local
-                - env | grep -e NEXT_PUBLIC_ >> .env.local
                 - yarn run build
     artifacts:
         baseDirectory: .next
