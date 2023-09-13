@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
+    "@tanstack/react-table": "^8.9.9",
     "@trpc/client": "^10.36.0",
     "@trpc/server": "^10.36.0",
     "@types/node": "20.4.4",
