@@ -7,9 +7,9 @@ import GeneSidebar from "./GeneSidebar";
 import GraphContainer from "../../GraphContainer";
 
 export default async function Page({
-    params: { id: [id] },
+    params: { id },
 }: {
-    params: { id: string[]; };
+    params: { id: string; };
 }) {
     const geneData = await NodeService.getGeneData(id);
     const edges = await GraphService.getGeneEdges(id);
