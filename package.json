@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
-    "@tanstack/react-table": "^8.9.9",
+    "@tanstack/react-table": "^8.9.11",
     "@trpc/client": "^10.36.0",
     "@trpc/server": "^10.36.0",
     "@types/node": "20.4.4",
@@ -21,7 +21,7 @@
     "classnames": "^2.3.2",
     "framer-motion": "^10.16.1",
     "igvf-catalog": "git+https://github.com/IGVF-DACC/igvf-catalog.git",
-    "next": "13.4.19",
+    "next": "13.5.2",
     "next13-progressbar": "^1.0.2",
     "postcss": "8.4.27",
     "react": "18.2.0",
