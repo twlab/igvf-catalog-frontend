@@ -15,7 +15,7 @@ export default function TableModal({
 }) {
     return (
         <Modal title={id + ": " + tableType + "s"}>
-            <NodeEdgesTable baseType="gene" baseId={id} tableType={tableType} />
+            <NodeEdgesTable baseType="variant" baseId={id} tableType={tableType} />
         </Modal>
     )
 }

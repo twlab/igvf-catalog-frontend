@@ -19,7 +19,7 @@ export default function Modal({
         <div tabIndex={-1} aria-hidden="true" className="fixed top-0 left-0 right-0 z-50 w-full h-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 flex flex-row items-center justify-center bg-gray-500 bg-opacity-50">
             <div className="relative w-full max-w-6xl h-5/6">
                 <div className="flex flex-col relative bg-white rounded-lg shadow h-full">
-                    <div className="flex items-start justify-between p-4 border-b rounded-t">
+                    <div className="flex items-center justify-between p-4 border-b rounded-t">
                         <h3 className="text-xl font-semibold text-gray-900">
                             {title}
                         </h3>
@@ -30,7 +30,7 @@ export default function Modal({
                             <span className="sr-only">Close modal</span>
                         </button>
                     </div>
-                    <div className="p-6 overflow-scroll">
+                    <div className="overflow-scroll">
                         {children}
                     </div>
                 </div>

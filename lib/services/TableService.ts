@@ -1,24 +1,31 @@
-import { RouterInputs, RouterOutputs, api } from "@/utils/trpc";
+import { apiBaseUrl } from "@/utils/api";
 import {
-    DrugNodeData,
-    GeneNodeData,
-    NodeType,
-    ProteinNodeData,
-    StudyNodeData,
-    TranscriptNodeData,
-    VariantNodeData
+    NodeType
 } from "./NodeService";
 
 const nameLookup: { [key: string]: string } = {
     "_id": "ID",
     "transcript_type": "Transcript Type",
     "chr": "Chromosome",
-    // ... TOOD: add more    
+    "start": "Start",
+    "end": "End",
+    "transcript_name": "Transcript Name",
+    "gene_name": "Gene Name",
+    "source": "Source",
+    "version": "Version",
+    "source_url": "Source URL",
+    // ... TOOD: add more
 }
 
 export default class TableService {
-    static async getTableData(sourceType: NodeType, sourceId: string, destType: NodeType, page: number=0) {
-        const data = await fetch(`https://api.catalog.igvf.org/api/${sourceType}s/${sourceId}/${destType}s?page=${page}`).then(res => res.json());
+    static async getTableData(sourceType: NodeType, sourceId: string, destType: NodeType) {
+        const data: any[] = [];
+        let pageNum = 0;
+        while (true) {
+            const nextPage = await fetch(`${apiBaseUrl}/${sourceType}s/${sourceId}/${destType}s?page=${pageNum++}`).then(res => res.json());
+            if (nextPage.length === 0 || pageNum > 99) break;
+            data.push(...nextPage);
+        }
         return data;
     }
 

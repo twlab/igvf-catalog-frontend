@@ -1,5 +1,5 @@
 import { DrugNode, RsVariant, StudyNode } from "@/utils/db";
-import { api, RouterOutputs } from "@/utils/trpc";
+import { api, RouterOutputs } from "@/utils/api";
 
 export type GeneNodeData = RouterOutputs["geneID"];
 export type ProteinNodeData = RouterOutputs["proteinID"];

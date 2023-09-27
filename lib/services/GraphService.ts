@@ -1,4 +1,4 @@
-import { RouterInputs, RouterOutputs, api } from "@/utils/trpc";
+import { RouterInputs, RouterOutputs, api } from "@/utils/api";
 import { DrugNodeData, GeneNodeData, ProteinNodeData, StudyNodeData, TranscriptNodeData, VariantNodeData } from "./NodeService";
 import { getDrugsLinkedToRsidKey, getGenesLinkedToRsidKey, getProteinsLinkedToRsidKey, getStudiesLinkedToRsidKey } from "@/utils/db";
 
