@@ -11,6 +11,7 @@ import {
     getSortedRowModel,
 } from "@tanstack/react-table"
 import { useEffect, useMemo, useState } from "react";
+import Papa from 'papaparse';
 import LoadingSpinner from "../LoadingSpinner";
 import './table.css'
 import classNames from "classnames";
@@ -31,6 +32,7 @@ export default function NodeEdgesTable({
     const [data, setData] = useState<any>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
     const [loadingState, setLoadingState] = useState<LoadingState>('loading');
+    const [searchTerm, setSearchTerm] = useState("");
 
     const columns = useMemo(
         () => Object.keys(data[0] || {}).map((key) => (
@@ -42,8 +44,17 @@ export default function NodeEdgesTable({
         [data]
     );
 
+    const filteredData = useMemo(() => {
+        if (!searchTerm) return data;
+        return data.filter((row: any) => {
+            return Object.values(row).some(val =>
+                String(val).toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+    }, [data, searchTerm]);
+
     const table = useReactTable<any>({
-        data,
+        data: filteredData,
         columns,
         state: {
             sorting
@@ -65,6 +76,20 @@ export default function NodeEdgesTable({
         }
     }
 
+    const exportToCSV = () => {
+        const csv = Papa.unparse(data);
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'data.csv';
+        a.click();
+
+        URL.revokeObjectURL(url);
+    };
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -76,6 +101,30 @@ export default function NodeEdgesTable({
 
     return (
         <div className="p-4 w-full overflow-x-scroll">
+            <div className="mb-4 flex flex-row items-center justify-between">
+                <button onClick={exportToCSV} className="mb-4 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">
+                    Export to CSV
+                </button>
+                <div className="relative">
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search..."
+                        className="p-2 pl-10 border rounded"
+                    />
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6 absolute top-1/2 left-2.5 transform -translate-y-1/2"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                </div>
+            </div>
             <table
                 {...{
                     style: {
