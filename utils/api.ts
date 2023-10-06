@@ -2,7 +2,9 @@ import { type igvfCatalogRouter as AppRouter } from 'igvf-catalog/src/routers/_a
 import { createTRPCProxyClient, httpBatchLink, loggerLink } from '@trpc/client';
 import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server';
 
-const baseUrl = "https://api.catalog.igvf.org/trpc";
+export const apiBaseUrl = "https://api.catalog.igvf.org/api";
+
+const trpcBaseUrl = "https://api.catalog.igvf.org/trpc";
 
 export const api = createTRPCProxyClient<AppRouter>({
     links: [
@@ -12,7 +14,7 @@ export const api = createTRPCProxyClient<AppRouter>({
                 (opts.direction === "down" && opts.result instanceof Error),
         }),
         httpBatchLink({
-            url: baseUrl,
+            url: trpcBaseUrl,
         })
     ]
 });

@@ -28,7 +28,7 @@ export default function RootLayout({
           <BackgroundFrame>
             {children}
           </BackgroundFrame>
-          {/* {modal} */}
+          {modal}
         </Providers>
       </body>
     </html>

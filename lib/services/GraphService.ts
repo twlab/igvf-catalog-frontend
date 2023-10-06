@@ -1,4 +1,4 @@
-import { RouterInputs, RouterOutputs, api } from "@/utils/trpc";
+import { RouterInputs, RouterOutputs, api } from "@/utils/api";
 import { DrugNodeData, GeneNodeData, ProteinNodeData, StudyNodeData, TranscriptNodeData, VariantNodeData } from "./NodeService";
 import { getDrugsLinkedToRsidKey, getGenesLinkedToRsidKey, getProteinsLinkedToRsidKey, getStudiesLinkedToRsidKey } from "@/utils/db";
 
@@ -51,7 +51,6 @@ export default class GraphService {
             const proteinEdges = (await getProteinsLinkedToRsidKey(rsidNodeId)).map(protein => ({ protein }));
             const drugEdges = (await getDrugsLinkedToRsidKey(rsidNodeId)).map(drug => ({ drug }));
             const studyEdges = (await getStudiesLinkedToRsidKey(rsidNodeId)).map(study => ({ study }));
-            console.log(geneEdges, proteinEdges, drugEdges, studyEdges)
             return [...geneEdges, ...proteinEdges, ...drugEdges, ...studyEdges];
         } catch (error) {
             return null;
