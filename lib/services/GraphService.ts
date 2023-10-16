@@ -15,7 +15,7 @@ export default class GraphService {
     static async getGeneEdges(gene_id: string): Promise<GraphNode[] | null> {
         try {
             const proteinNodes = (await api.proteinsFromGeneID.query({ gene_id })).map(protein => ({ protein }));
-            const transcriptNodes = (await api.transcriptsFromGeneID.query({ gene_id })).map(transcript => ({ transcript }));
+            const transcriptNodes = (await api.transcriptsFromGeneID.query({ gene_id, verbose: "true" })).map(transcript => ({ transcript: transcript.transcript as unknown as TranscriptNodeData }));
 
             return [...proteinNodes, ...transcriptNodes];
         } catch (error) {
@@ -26,7 +26,7 @@ export default class GraphService {
     static async getProteinEdges(protein_id: string): Promise<GraphNode[] | null> {
         try {
             const geneNodes = (await api.genesFromProteinID.query({ protein_id })).map(gene => ({ gene }));
-            const transcriptNodes = (await api.transcriptsFromProteinID.query({ protein_id })).map(transcript => ({ transcript }));
+            const transcriptNodes = (await api.transcriptsFromProteinID.query({ protein_id, verbose: "true" })).map(transcript => ({ transcript: transcript.transcript as unknown as TranscriptNodeData }));
 
             return [...geneNodes, ...transcriptNodes];
         } catch (error) {
@@ -36,8 +36,8 @@ export default class GraphService {
 
     static async getTranscriptEdges(transcript_id: string): Promise<GraphNode[] | null> {
         try {
-            const geneNodes = (await api.genesFromTranscriptsByID.query({ transcript_id })).map(gene => ({ gene }));
-            const proteinNodes = (await api.proteinsFromTranscriptID.query({ transcript_id })).map(protein => ({ protein }));
+            const geneNodes = (await api.genesFromTranscriptsByID.query({ transcript_id, verbose: "true" })).map(gene => ({ gene: gene.gene as unknown as GeneNodeData }));
+            const proteinNodes = (await api.proteinsFromTranscriptID.query({ transcript_id, verbose: "true" })).map(protein => ({ protein: protein.protein as unknown as ProteinNodeData }));
 
             return [...geneNodes, ...proteinNodes];
         } catch (error) {
