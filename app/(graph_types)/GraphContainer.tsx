@@ -276,6 +276,20 @@ export default function GraphContainer({
     };
   }, []); 
 
+  const [
+    geneStrokeWidth,
+    proteinStrokeWidth,
+    transcriptStrokeWidth,
+    drugStrokeWidth,
+    studyStrokeWidth,
+  ] = calculateStrokeWidths([
+    genes.length,
+    proteins.length,
+    transcripts.length,
+    drugs.length,
+    studies.length,
+  ]);
+
   if (openType) {
     return (
       <div className="p-6">
