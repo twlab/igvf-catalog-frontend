@@ -3,6 +3,7 @@
 import { GeneEnsemblById, ProteinUniprotById, PubMedLink } from "@/components/extLinks";
 import { GraphNode } from "@/lib/services/GraphService";
 import { NodeType } from "@/lib/services/NodeService";
+import { getDrugsLinkedToRsidKey } from "@/utils/db";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -205,7 +206,7 @@ function DisplayGraphNode({
 }) {
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4 border border-black m-1 w-72">
+    <div className="bg-white rounded-lg shadow-lg p-4 border border-slate-400 m-1 w-72 hover:shadow-xl hover:border-black">
       {(() => {
         if (node.gene) return <GeneNodeContent gene={node.gene} />
         if (node.protein) return <ProteinNodeContent protein={node.protein} />
@@ -235,7 +236,13 @@ export default function GraphContainer({
 
   const [openType, setOpenType] = useState<NodeType | null>(null);
 
-  const handleCloseType = () => setOpenType(null);
+  const handleCloseType = () => {
+    window.location.hash = "";
+  }
+  
+  const handleSetType = (type: NodeType) => {
+    window.location.hash = type;
+  }
 
   const [
     geneStrokeWidth,
@@ -250,6 +257,24 @@ export default function GraphContainer({
     drugs.length,
     studies.length,
   ]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash.length === 0) return setOpenType(null);
+
+      const hashContent = window.location.hash.substr(1);
+      if (!(['gene', 'protein', 'transcript', 'drug', 'study'] as NodeType[]).includes(hashContent as any)) return setOpenType(null);
+      setOpenType(hashContent as NodeType);
+    };
+
+    handleHashChange();
+    
+    window.addEventListener('hashchange', handleHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []); 
 
   if (openType) {
     return (
@@ -393,8 +418,8 @@ export default function GraphContainer({
                 >
                   <div className="mb-6">
                     <div className="flex flex-row items-center gap-x-4">
-                      <h2 className="text-2xl">Genes</h2>
-                      <ExpandIcon onClick={() => setOpenType('gene')} />
+                      <h2 className="text-2xl">Genes ({genes.length})</h2>
+                      <ExpandIcon onClick={() => handleSetType('gene')} />
                       <TableButton type="gene" />
                     </div>
                     <div className="flex flex-row">
@@ -409,8 +434,8 @@ export default function GraphContainer({
                 >
                   <div className="mb-6">
                     <div className="flex flex-row items-center gap-x-4">
-                      <h2 className="text-2xl">Proteins</h2>
-                      <ExpandIcon onClick={() => setOpenType('protein')} />
+                      <h2 className="text-2xl">Proteins ({proteins.length})</h2>
+                      <ExpandIcon onClick={() => handleSetType('protein')} />
                       <TableButton type="protein" />
                     </div>
                     <div className="flex flex-row">
@@ -425,8 +450,8 @@ export default function GraphContainer({
                 >
                   <div className="mb-6">
                     <div className="flex flex-row items-center gap-x-4">
-                      <h2 className="text-2xl">Transcripts</h2>
-                      <ExpandIcon onClick={() => setOpenType('transcript')} />
+                      <h2 className="text-2xl">Transcripts ({transcripts.length})</h2>
+                      <ExpandIcon onClick={() => handleSetType('transcript')} />
                       <TableButton type="transcript" />
                     </div>
                     <div className="flex flex-row">
@@ -441,8 +466,8 @@ export default function GraphContainer({
                 >
                   <div className="mb-6">
                     <div className="flex flex-row items-center gap-x-4">
-                      <h2 className="text-2xl">Drugs</h2>
-                      <ExpandIcon onClick={() => setOpenType('drug')} />
+                      <h2 className="text-2xl">Drugs ({drugs.length})</h2>
+                      <ExpandIcon onClick={() => handleSetType('drug')} />
                       <TableButton type="drug" />
                     </div>
                     <div className="flex flex-row">
@@ -457,8 +482,8 @@ export default function GraphContainer({
                 >
                   <div className="mb-6">
                     <div className="flex flex-row items-center gap-x-4">
-                      <h2 className="text-2xl">Studies</h2>
-                      <ExpandIcon onClick={() => setOpenType('study')} />
+                      <h2 className="text-2xl">Studies ({studies.length})</h2>
+                      <ExpandIcon onClick={() => handleSetType('study')} />
                     </div>
                     <div className="flex flex-row">
                       {studies.map(n => <DisplayGraphNode key={n.study?._id} node={n} />)}
