@@ -4,18 +4,12 @@ import { persistReducer, persistStore } from "redux-persist";
 
 import searchReducer from "./slices/searchSlice";
 import uiReducer from "./slices/uiSlice";
-
-const searchPersistConfig = {
-  key: "search",
-  storage,
-  blacklist: ["searchQuery", "slashCommand"],
-};
-
-const persistedSearchReducer = persistReducer(searchPersistConfig, searchReducer);
+import settingsReducer from "./slices/settingsSlice";
 
 const rootReducer = combineReducers({
-  search: persistedSearchReducer,
+  search: searchReducer,
   ui: uiReducer,
+  settings: settingsReducer
 });
 
 export const store = configureStore({

@@ -1,7 +1,9 @@
 import { PayloadAction, createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import storage from "redux-persist/lib/storage";
 import { RootState } from "../store";
 import { QueryType } from "@/lib/services/AutocompleteService";
 import { exactTypes } from "@/components/MainSearchBar";
+import { persistReducer } from "redux-persist";
 
 interface SearchHistoryEntryType {
     term: string,
@@ -68,4 +70,12 @@ export const selectSearchHistory = searchHistorySelectors.selectAll;
 export const selectSearchQuery = (state: RootState) => state.search.searchQuery;
 export const selectSlashCommand = (state: RootState) => state.search.slashCommand;
 
-export default searchSlice.reducer;
+const searchReducer = searchSlice.reducer;
+
+const searchPersistConfig = {
+    key: "search",
+    storage,
+    blacklist: ["searchQuery", "slashCommand"],
+};
+
+export default persistReducer(searchPersistConfig, searchReducer);

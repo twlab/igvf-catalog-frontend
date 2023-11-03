@@ -1,4 +1,4 @@
-import { RouterInputs, RouterOutputs, api } from "@/utils/api";
+import { api } from "@/utils/api";
 import { DrugNodeData, GeneNodeData, ProteinNodeData, StudyNodeData, TranscriptNodeData, VariantNodeData } from "./NodeService";
 import { getDrugsLinkedToRsidKey, getGenesLinkedToRsidKey, getProteinsLinkedToRsidKey, getStudiesLinkedToRsidKey } from "@/utils/db";
 
@@ -15,7 +15,7 @@ export default class GraphService {
     static async getGeneEdges(gene_id: string): Promise<GraphNode[] | null> {
         try {
             const proteinNodes = (await api.proteinsFromGeneID.query({ gene_id })).map(protein => ({ protein }));
-            const transcriptNodes = (await api.transcriptsFromGeneID.query({ gene_id, verbose: "true" })).map(transcript => ({ transcript: transcript.transcript as unknown as TranscriptNodeData }));
+            const transcriptNodes = (await api.transcriptsFromGeneID.query({ gene_id, verbose: "true" })).map(transcript => ({ transcript: (transcript.transcript as TranscriptNodeData[])[0] }));
 
             return [...proteinNodes, ...transcriptNodes];
         } catch (error) {
@@ -26,7 +26,7 @@ export default class GraphService {
     static async getProteinEdges(protein_id: string): Promise<GraphNode[] | null> {
         try {
             const geneNodes = (await api.genesFromProteinID.query({ protein_id })).map(gene => ({ gene }));
-            const transcriptNodes = (await api.transcriptsFromProteinID.query({ protein_id, verbose: "true" })).map(transcript => ({ transcript: transcript.transcript as unknown as TranscriptNodeData }));
+            const transcriptNodes = (await api.transcriptsFromProteinID.query({ protein_id, verbose: "true" })).map(transcript => ({ transcript: (transcript.transcript as TranscriptNodeData[])[0] }));
 
             return [...geneNodes, ...transcriptNodes];
         } catch (error) {
@@ -47,7 +47,7 @@ export default class GraphService {
 
     static async getRsidEdges(rsidNodeId: string): Promise<GraphNode[] | null> {
         try {
-            const geneEdges = (await getGenesLinkedToRsidKey( rsidNodeId )).map(gene => ({ gene }));
+            const geneEdges = (await getGenesLinkedToRsidKey(rsidNodeId)).map(gene => ({ gene }));
             const proteinEdges = (await getProteinsLinkedToRsidKey(rsidNodeId)).map(protein => ({ protein }));
             const drugEdges = (await getDrugsLinkedToRsidKey(rsidNodeId)).map(drug => ({ drug }));
             const studyEdges = (await getStudiesLinkedToRsidKey(rsidNodeId)).map(study => ({ study }));

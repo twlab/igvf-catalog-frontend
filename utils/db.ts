@@ -46,6 +46,8 @@ function getDatabase():Database{
 
 const db = getDatabase();
 
+const LIMIT = 99;
+
 /**
  * find a list of variants by rsid
  * @param db: the igvf catalog database
@@ -79,7 +81,7 @@ export async function getVariantByRsid(rsid: string): Promise<RsVariant[]> {
  * @param rsid 
  * @param num: how many genes to return, default 5
  */
-export async function getGenesLinkedToRsidKey(rsidKey: string, num: number=5) {
+export async function getGenesLinkedToRsidKey(rsidKey: string, num: number=LIMIT) {
   const genes = db.collection("genes");
   const variants = db.collection("variants");
   try {
@@ -109,7 +111,7 @@ export async function getGenesLinkedToRsidKey(rsidKey: string, num: number=5) {
  * @param num 
  * @returns 
  */
-export async function getProteinsLinkedToRsidKey(rsidKey: string, num: number=5) {
+export async function getProteinsLinkedToRsidKey(rsidKey: string, num: number=LIMIT) {
   const proteins = db.collection("proteins");
   const variants = db.collection("variants");
   try {
@@ -139,7 +141,7 @@ export async function getProteinsLinkedToRsidKey(rsidKey: string, num: number=5)
  * @param num 
  * @returns 
  */
-export async function getDrugsLinkedToRsidKey(rsidKey: string, num: number=5) {
+export async function getDrugsLinkedToRsidKey(rsidKey: string, num: number=LIMIT) {
   const drugs = db.collection("drugs");
   const variants = db.collection("variants");
   try {
@@ -162,7 +164,7 @@ export async function getDrugsLinkedToRsidKey(rsidKey: string, num: number=5) {
   return []
 }
 
-export async function getStudiesLinkedToRsidKey(rsidKey: string, num: number=5) {
+export async function getStudiesLinkedToRsidKey(rsidKey: string, num: number=LIMIT) {
   const studies = db.collection("studies");
   const variants = db.collection("variants");
   try {

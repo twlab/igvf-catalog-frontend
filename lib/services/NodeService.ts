@@ -8,7 +8,8 @@ export type DrugNodeData = DrugNode;
 export type VariantNodeData = RsVariant;
 export type StudyNodeData = StudyNode;
 
-export type NodeType = "gene" | "protein" | "transcript" | "drug" | "variant" | "study";
+export const NodeTypes = ["gene", "protein", "transcript", "drug", "variant", "study"] as const;
+export type NodeType = typeof NodeTypes[number];
 
 export default class NodeService {
     static async getGeneData(id: string) {

@@ -2,11 +2,13 @@
 
 import { GeneEnsemblById, ProteinUniprotById, PubMedLink } from "@/components/extLinks";
 import { GraphNode } from "@/lib/services/GraphService";
-import { NodeType } from "@/lib/services/NodeService";
+import { NodeType, NodeTypes } from "@/lib/services/NodeService";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArcherContainer, ArcherElement } from 'react-archer';
+import { useSelector } from "react-redux";
+import { BASE_THICKNESS, selectColors, selectDashedTypes, selectEdgeThickness } from "../_redux/slices/settingsSlice";
 
 function GeneNodeContent({
   gene
@@ -203,16 +205,41 @@ function DisplayGraphNode({
 }: {
   node: GraphNode;
 }) {
+  const [outlineColor, setOutlineColor] = useState("rgb(148 163 184)");
+  const [dashed, setDashed] = useState(false);
+  const [edgeThickness, setEdgeThickness] = useState(1);
+  const [hovering, setHovering] = useState(false);
+
+  const _colorMap = useSelector(selectColors);
+  const _dashedTypes = useSelector(selectDashedTypes);
+  const _edgeThickness = useSelector(selectEdgeThickness);
+  const key = Object.keys(node)[0] as keyof GraphNode;
+
+  useEffect(() => {
+    if (!_colorMap[key]) return setOutlineColor("rgb(148 163 184)");
+    setOutlineColor(_colorMap[key]);
+    setDashed(_dashedTypes.includes(key));
+    setEdgeThickness(_edgeThickness);
+  }, [_colorMap, _dashedTypes, _edgeThickness, key]);
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4 border border-slate-400 m-1 w-72 hover:shadow-xl hover:border-black">
+    <div
+      className="bg-white rounded-lg shadow-lg p-4 m-1 w-72 hover:shadow-xl"
+      style={{
+        outlineColor,
+        outlineStyle: dashed ? 'dashed' : 'solid',
+        outlineWidth: (edgeThickness / BASE_THICKNESS) + (hovering ? 0.5 : 0) + 0.5
+      }}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+    >
       {(() => {
-        if (node.gene) return <GeneNodeContent gene={node.gene} />
-        if (node.protein) return <ProteinNodeContent protein={node.protein} />
-        if (node.transcript) return <TranscriptNodeContent transcript={node.transcript} />
-        if (node.drug) return <DrugNodeContent drug={node.drug} />
-        if (node.study) return <StudyNodeContent study={node.study} />
-        if (node.variant) return <VariantNodeContent variant={node.variant} />
+        if (node.gene) return <GeneNodeContent gene={node.gene} />;
+        if (node.protein) return <ProteinNodeContent protein={node.protein} />;
+        if (node.transcript) return <TranscriptNodeContent transcript={node.transcript} />;
+        if (node.drug) return <DrugNodeContent drug={node.drug} />;
+        if (node.study) return <StudyNodeContent study={node.study} />;
+        if (node.variant) return <VariantNodeContent variant={node.variant} />;
 
         return null;
       })()}
@@ -227,6 +254,10 @@ export default function GraphContainer({
   edges: GraphNode[];
   root: GraphNode;
 }) {
+  const colorMap = useSelector(selectColors);
+  const dashedTypes = useSelector(selectDashedTypes);
+  const edgeThickness = useSelector(selectEdgeThickness);
+
   const genes = edges.filter((edge) => edge.gene);
   const proteins = edges.filter((edge) => edge.protein);
   const transcripts = edges.filter((edge) => edge.transcript);
@@ -238,7 +269,7 @@ export default function GraphContainer({
   const handleCloseType = () => {
     window.location.hash = "";
   }
-  
+
   const handleSetType = (type: NodeType) => {
     window.location.hash = type;
   }
@@ -249,31 +280,34 @@ export default function GraphContainer({
     transcriptStrokeWidth,
     drugStrokeWidth,
     studyStrokeWidth,
-  ] = calculateStrokeWidths([
-    genes.length,
-    proteins.length,
-    transcripts.length,
-    drugs.length,
-    studies.length,
-  ]);
+  ] = calculateStrokeWidths(
+    [
+      genes.length,
+      proteins.length,
+      transcripts.length,
+      drugs.length,
+      studies.length,
+    ],
+    edgeThickness / BASE_THICKNESS
+  );
 
   useEffect(() => {
     const handleHashChange = () => {
       if (window.location.hash.length === 0) return setOpenType(null);
 
       const hashContent = window.location.hash.substr(1);
-      if (!(['gene', 'protein', 'transcript', 'drug', 'study'] as NodeType[]).includes(hashContent as any)) return setOpenType(null);
+      if (!(NodeTypes).includes(hashContent as any)) return setOpenType(null);
       setOpenType(hashContent as NodeType);
     };
 
     handleHashChange();
-    
+
     window.addEventListener('hashchange', handleHashChange);
-    
+
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
-  }, []); 
+  }, []);
 
   if (openType) {
     return (
@@ -368,35 +402,55 @@ export default function GraphContainer({
               id="rootNode"
               relations={[
                 {
-                  targetId: 'geneContainer',
-                  targetAnchor: 'left',
-                  sourceAnchor: 'right',
-                  style: { strokeColor: 'black', strokeWidth: geneStrokeWidth }
+                  "targetId": "geneContainer",
+                  "targetAnchor": "left",
+                  "sourceAnchor": "right",
+                  "style": {
+                    "strokeColor": colorMap['gene'] || 'black',
+                    "strokeWidth": geneStrokeWidth,
+                    "strokeDasharray": dashedTypes.includes('gene') ? '5,5' : undefined
+                  }
                 },
                 {
-                  targetId: 'proteinContainer',
-                  targetAnchor: 'left',
-                  sourceAnchor: 'right',
-                  style: { strokeColor: 'black', strokeWidth: proteinStrokeWidth }
+                  "targetId": "proteinContainer",
+                  "targetAnchor": "left",
+                  "sourceAnchor": "right",
+                  "style": {
+                    "strokeColor": colorMap['protein'] || 'black',
+                    "strokeWidth": proteinStrokeWidth,
+                    "strokeDasharray": dashedTypes.includes('protein') ? '5,5' : undefined
+                  }
                 },
                 {
-                  targetId: 'transcriptContainer',
-                  targetAnchor: 'left',
-                  sourceAnchor: 'right',
-                  style: { strokeColor: 'black', strokeWidth: transcriptStrokeWidth }
+                  "targetId": "transcriptContainer",
+                  "targetAnchor": "left",
+                  "sourceAnchor": "right",
+                  "style": {
+                    "strokeColor": colorMap['transcript'] || 'black',
+                    "strokeWidth": transcriptStrokeWidth,
+                    "strokeDasharray": dashedTypes.includes('transcript') ? '5,5' : undefined
+                  }
                 },
                 {
-                  targetId: 'drugContainer',
-                  targetAnchor: 'left',
-                  sourceAnchor: 'right',
-                  style: { strokeColor: 'black', strokeWidth: drugStrokeWidth }
+                  "targetId": "drugContainer",
+                  "targetAnchor": "left",
+                  "sourceAnchor": "right",
+                  "style": {
+                    "strokeColor": colorMap['drug'] || 'black',
+                    "strokeWidth": drugStrokeWidth,
+                    "strokeDasharray": dashedTypes.includes('drug') ? '5,5' : undefined
+                  }
                 },
                 {
-                  targetId: 'studyContainer',
-                  targetAnchor: 'left',
-                  sourceAnchor: 'right',
-                  style: { strokeColor: 'red', strokeWidth: studyStrokeWidth }
-                },
+                  "targetId": "studyContainer",
+                  "targetAnchor": "left",
+                  "sourceAnchor": "right",
+                  "style": {
+                    "strokeColor": colorMap['study'] || 'red',
+                    "strokeWidth": studyStrokeWidth,
+                    "strokeDasharray": dashedTypes.includes('study') ? '5,5' : undefined
+                  }
+                }
               ]}
             >
               <div>
@@ -552,7 +606,7 @@ function BackButton({
   );
 }
 
-function calculateStrokeWidths(lengths: number[]): number[] {
+function calculateStrokeWidths(lengths: number[], scale: number = 1): number[] {
   const min = 1;
   const max = 4;
 
@@ -568,6 +622,6 @@ function calculateStrokeWidths(lengths: number[]): number[] {
 
   return lengths.map((len) => {
     const ratio = (len - minLen) / diff;
-    return min + ratio * delta;
+    return min + ratio * delta * scale;
   });
 }
