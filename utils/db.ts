@@ -9,7 +9,7 @@ export type RsVariant = {
   annotations: object;
   ref: string;
   alt: string;
-  
+
 }
 
 export type StudyNode = {
@@ -33,14 +33,14 @@ export type DrugNode = {
   source_url: string;
 }
 
-function getDatabase():Database{
-    return new Database({
-        url: process.env.DB_URL || "",
-        databaseName: process.env.DB_NAME || "",
-        auth: { 
-          username: process.env.DB_USERNAME || "", 
-          password: process.env.DB_PASSWORD
-        },
+function getDatabase(): Database {
+  return new Database({
+    url: process.env.DB_URL || "",
+    databaseName: process.env.DB_NAME || "",
+    auth: {
+      username: process.env.DB_USERNAME || "",
+      password: process.env.DB_PASSWORD
+    },
   });
 }
 
@@ -62,11 +62,11 @@ export async function getVariantByRsid(rsid: string): Promise<RsVariant[]> {
     FILTER ${rsid} in v.rsid
     RETURN v
     `);
-    let res:RsVariant[] = [];
+    let res: RsVariant[] = [];
     for await (const v of vs) {
       const newId = v["_key"];
       const newKey = v["_id"];
-      res.push({...v, _id: newId, _key: newKey});
+      res.push({ ...v, _id: newId, _key: newKey });
     }
     return res;
   } catch (err: any) {
@@ -81,7 +81,7 @@ export async function getVariantByRsid(rsid: string): Promise<RsVariant[]> {
  * @param rsid 
  * @param num: how many genes to return, default 5
  */
-export async function getGenesLinkedToRsidKey(rsidKey: string, num: number=LIMIT) {
+export async function getGenesLinkedToRsidKey(rsidKey: string, num: number = LIMIT) {
   const genes = db.collection("genes");
   const variants = db.collection("variants");
   try {
@@ -95,7 +95,7 @@ export async function getGenesLinkedToRsidKey(rsidKey: string, num: number=LIMIT
     for await (const g of gs) {
       const newId = g["_key"];
       const newKey = g["_id"];
-      res.push({...g, _id: newId, _key: newKey});
+      res.push({ ...g, _id: newId, _key: newKey });
     }
     return res;
   } catch (err: any) {
@@ -111,7 +111,7 @@ export async function getGenesLinkedToRsidKey(rsidKey: string, num: number=LIMIT
  * @param num 
  * @returns 
  */
-export async function getProteinsLinkedToRsidKey(rsidKey: string, num: number=LIMIT) {
+export async function getProteinsLinkedToRsidKey(rsidKey: string, num: number = LIMIT) {
   const proteins = db.collection("proteins");
   const variants = db.collection("variants");
   try {
@@ -125,7 +125,7 @@ export async function getProteinsLinkedToRsidKey(rsidKey: string, num: number=LI
     for await (const g of gs) {
       const newId = g["_key"];
       const newKey = g["_id"];
-      res.push({...g, _id: newId, _key: newKey});
+      res.push({ ...g, _id: newId, _key: newKey });
     }
     return res;
   } catch (err: any) {
@@ -141,7 +141,7 @@ export async function getProteinsLinkedToRsidKey(rsidKey: string, num: number=LI
  * @param num 
  * @returns 
  */
-export async function getDrugsLinkedToRsidKey(rsidKey: string, num: number=LIMIT) {
+export async function getDrugsLinkedToRsidKey(rsidKey: string, num: number = LIMIT) {
   const drugs = db.collection("drugs");
   const variants = db.collection("variants");
   try {
@@ -155,7 +155,7 @@ export async function getDrugsLinkedToRsidKey(rsidKey: string, num: number=LIMIT
     for await (const g of gs) {
       const newId = g["_key"];
       const newKey = g["_id"];
-      res.push({...g, _id: newId, _key: newKey});
+      res.push({ ...g, _id: newId, _key: newKey });
     }
     return res;
   } catch (err: any) {
@@ -164,7 +164,7 @@ export async function getDrugsLinkedToRsidKey(rsidKey: string, num: number=LIMIT
   return []
 }
 
-export async function getStudiesLinkedToRsidKey(rsidKey: string, num: number=LIMIT) {
+export async function getStudiesLinkedToRsidKey(rsidKey: string, num: number = LIMIT) {
   const studies = db.collection("studies");
   const variants = db.collection("variants");
   try {
@@ -176,10 +176,10 @@ export async function getStudiesLinkedToRsidKey(rsidKey: string, num: number=LIM
     `);
     let res = [];
     for await (const g of gs) {
-      if(g){
+      if (g) {
         const newId = g["_key"];
         const newKey = g["_id"];
-        res.push({...(g as any), _id: newId, _key: newKey});
+        res.push({ ...(g as any), _id: newId, _key: newKey });
       }
     }
     return res;

@@ -14,6 +14,8 @@ export default function useLayout() {
             setFooterHeight(footerEl?.offsetHeight || 72);
             setContentHeight((typeof window !== "undefined" ? window.innerHeight : 1000) - headerHeight);
         }
+
+        updateHeight();
         
         window.addEventListener('resize', updateHeight);
         
